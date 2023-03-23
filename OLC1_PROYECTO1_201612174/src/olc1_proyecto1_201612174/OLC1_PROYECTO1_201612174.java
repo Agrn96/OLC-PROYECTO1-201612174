@@ -6,10 +6,12 @@ package olc1_proyecto1_201612174;
 
 import Analizador.Parser;
 import Analizador.lexico;
+import Automata.Arbol;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,6 +22,7 @@ public class OLC1_PROYECTO1_201612174 {
     /**
      * @param args the command line arguments
      */
+    public static ArrayList<Arbol> arboles= new ArrayList<>();
     public static void main(String[] args) {
         // TODO code application logic here
         try {
@@ -30,6 +33,22 @@ public class OLC1_PROYECTO1_201612174 {
             analisar.parse();
         } catch (Exception e) {
             System.err.print("Error");
+        }
+        
+        //______________
+        int cont=0;
+        for (Arbol arbol : arboles) {
+            cont++;
+            arbol.asignarAnulabilidad(arbol.rootArbol());
+           String cadena2= arbol.getContenido(arbol.rootArbol());
+            System.out.println("NOMBRE:_"+arbol.getName());
+            
+          // arbol.ObtenerSiguientes(arbol.rootArbol());
+           arbol.crearTabla_siguientes();
+           arbol.tabla_Transiciones();
+           arbol.graficar("arbol"+String.valueOf(cont)+".jpg", "arbol"+String.valueOf(cont), cadena2);
+           arbol.graficar("siguiente"+String.valueOf(cont)+".jpg","siguientes"+String.valueOf(cont), arbol.GraficarTabla());
+           
         }
     }
 

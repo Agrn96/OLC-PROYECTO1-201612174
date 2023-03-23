@@ -6,7 +6,7 @@ package Analizador;
 
 /**
  *
- * @author Alberto Gabriel Reyes Ning, 201612174
+ * @author herre
  */
 public class Main {
 

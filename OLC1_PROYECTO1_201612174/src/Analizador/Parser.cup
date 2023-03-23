@@ -1,6 +1,7 @@
 package Analizador;
 import java_cup.runtime.*;
-import OLC1_PROYECTO1_201612174.*;
+import Automata.*;
+import olc1_proyecto1_201612174.*;
 
 parser code
 {:
@@ -32,7 +33,7 @@ non terminal inicio;
 non terminal instructions;
 non terminal conjuntos;
 non terminal expresion_regular;
-non terminal expresion;
+non terminal Nodo expresion;
 non terminal validar_cadena;
 start with ini;
 ini::=
@@ -64,17 +65,22 @@ conjuntos::=
 
 
 expresion_regular::=
-    TK_ID TK_ASIGNACION expresion
+    TK_ID:i TK_ASIGNACION expresion:a {: Nodo raiz;
+                                       raiz=new Nodo(a,".",new Nodo(null,"#",null));
+                                       Arbol arbol=new Arbol(raiz);
+                                       arbol.setName(i);
+                                       OLC1_PROYECTO1_201612174.arboles.add(arbol);
+                                     :}
 ;
 
 expresion::=
-    TK_CP: expresion expresion {: System.out.println("+"); :}
-    | TK_CK expresion expresion {: System.out.println("*"); :}
-    | TK_OR expresion expresion {: System.out.println("or"); :}
-    | TK_I expresion expresion {: System.out.println("!"); :}
-    | TK_P expresion expresion {: System.out.println("."); :}
-    |TK_CONJUNTO
-    |TK_CADENA
+    TK_P expresion:a expresion:b {: RESULT=new Nodo(a,".",b); :}
+    | TK_OR expresion:a expresion:b {: RESULT=new Nodo(a,"\\|",b); :}
+    |TK_CP expresion:a {: RESULT=new Nodo(a,"+",null); :}
+    | TK_CK expresion:a  {: RESULT=new Nodo(a,"*",null); :}
+    | TK_I expresion:a {: RESULT=new Nodo(a,"?",null); :}  
+    |TK_CONJUNTO:a {: RESULT=new Nodo(null,a,null); :}
+    |TK_CADENA:a {: RESULT=new Nodo(null,a,null); :}
 
 ;
 
