@@ -30,6 +30,7 @@ terminal String TK_CONJUNTO, TK_LISTA_SIMBOLOS;
 
 non terminal ini;
 non terminal inicio;
+non terminal comentarios2;
 non terminal instructions;
 non terminal conjuntos;
 non terminal expresion_regular;
@@ -38,6 +39,7 @@ non terminal validar_cadena;
 start with ini;
 ini::=
     TK_LLAVEIZ inicio  TK_LLAVED
+    |comentarios2
     |error
 ;
 
@@ -46,6 +48,12 @@ inicio::=
         |  instructions 
 ; 
 
+comentarios2 ::=
+             TK_COMENT:c {: System.out.println("Comentario: "+c); :}  comentarios2          
+             |TK_COMENT:c {: System.out.println("Comentario: "+c); :} 
+             |TK_COM_MTL:c {: System.out.println("Comentario: "+c); :} comentarios2
+             |TK_COM_MTL:c {: System.out.println("Comentario: "+c); :} 
+;    
 instructions::=
         TK_COMENT:c {: System.out.println("Comentario: "+c); :}
         |conjuntos TK_PC

@@ -6,10 +6,7 @@ package Automata;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author Alberto Gabriel Reyes Ning, 201612174
- */
+
 public class Siguientes {
 
     private String hoja;

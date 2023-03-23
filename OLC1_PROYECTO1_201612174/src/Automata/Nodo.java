@@ -4,10 +4,6 @@
  */
 package Automata;
 
-/**
- *
- * @author Alberto Gabriel Reyes Ning, 201612174
- */
 public class Nodo {
 
     private String object;
@@ -78,35 +74,48 @@ public class Nodo {
     }
 
     public String grafica() {
-        
-        String temp="";
-        temp=this.getObject().replaceFirst("\"","");
-        char comillas= temp.charAt(temp.length()-1);
+
+        String temp = "";
+        temp = this.getObject().replaceFirst("\"", "");
+        char comillas = temp.charAt(temp.length() - 1);
         if ("\"".equals(String.valueOf(comillas))) {
-            temp=temp.substring(0,temp.length()-1);
+            temp = temp.substring(0, temp.length() - 1);
         }
-        temp=temp.replace("{", "");
-        temp=temp.replace("}", "");
+
+        if (temp.equals("[")) {
+            temp = "\\[";
+        } else if (temp.equals("]")) {
+            temp = "\\]";
+        } else if (temp.equals("<")) {
+            temp = "\\<";
+        } else if (temp.equals(">")) {
+            temp = "\\>";
+        }
+        if (temp.equals("{")) {
+            temp = "\\{";
+        }
+        if (temp.equals("}")) {
+            temp = "\\}";
+        }
+
+        temp = temp.replace("{", "");
+        temp = temp.replace("}", "");
 
         String grafo;
-       
-              grafo = "nodo" + this.id + "[ label=\"<C0>"+this.numLeft+"|" +this.anulable+"\\n"+ temp + "|<C1>"+this.numRight+"\"];\n";
-        
+
+        grafo = "nodo" + this.id + "[ label=\"<C0>" + this.numLeft + "|" + this.anulable + "\\n" + temp + "|<C1>" + this.numRight + "\"];\n";
 
         if (this.node_Left != null) {
             grafo = grafo + this.node_Left.grafica() + "nodo" + this.id + ":C0->nodo" + this.node_Left.id + "\n";
         }
 
-        if (this.node_Right!=null) {
-            
+        if (this.node_Right != null) {
+
             grafo = grafo + this.node_Right.grafica() + "nodo" + this.id + ":C0->nodo" + this.node_Right.id + "\n";
 
         }
         return grafo;
-        
+
     }
-    
-   
-    
-   
+
 }

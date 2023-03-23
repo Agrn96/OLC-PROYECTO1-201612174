@@ -5,35 +5,55 @@
 package Automata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-/**
- *
- * @author Alberto Gabriel Reyes Ning, 201612174
- */
+
 public class Estado {
 
-    private int id;
-    private ArrayList<String[]> sigueintes;
+   private String name;
+   private ArrayList<Integer> datos=new ArrayList<>();
 
-    public Estado(int id, ArrayList<String[]> sigueintes) {
-        this.id = id;
-        this.sigueintes = sigueintes;
+    public Estado(String name) {
+        this.name = name;
     }
 
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public ArrayList<String[]> getSigueintes() {
-        return sigueintes;
+    
+    public void setNumero(int number){
+        if (!this.datos.isEmpty()) {
+            if (!existente(number)) {
+                this.datos.add(number);
+                Collections.sort(this.datos);
+            }
+        }else{
+            this.datos.add(number);
+        }
     }
-
-    public void setSigueintes(ArrayList<String[]> sigueintes) {
-        this.sigueintes = sigueintes;
+    
+   
+   
+    public void setNumbers(ArrayList<Integer> numbers){
+        this.datos=numbers;
     }
-
+    
+   public ArrayList<Integer> getNumbers(){
+       return this.datos;
+   }
+   
+   public boolean existente(int number){
+       
+       for (Integer dato : datos) {
+           if (dato==number) {
+               return true;
+           }
+       }
+       return false;
+   }
 }

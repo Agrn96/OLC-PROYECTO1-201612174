@@ -4,10 +4,7 @@
  */
 package Automata;
 
-/**
- *
- * @author Alberto Gabriel Reyes Ning, 201612174
- */
+
 public class Temp_siguietes {
 
     private String hoja[];

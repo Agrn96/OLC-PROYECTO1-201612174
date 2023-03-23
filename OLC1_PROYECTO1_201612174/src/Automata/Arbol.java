@@ -7,17 +7,17 @@ package Automata;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author herre
- */
 public class Arbol {
 
     Nodo root;
     int cont;
+    int contEst = 1;
     String name;
     //________listas__________
     ArrayList<Temp_siguietes> lista_siguienes = new ArrayList<>();
@@ -29,6 +29,16 @@ public class Arbol {
     ArrayList<Estado> estados_nuevos = new ArrayList<>();
     // Esta lista almacenara lo estados que ya existen
     ArrayList<Estado> estados_existentes = new ArrayList<>();
+    //
+    ArrayList<String> listaSiguientes = new ArrayList<>();
+    ArrayList<String> terminales = new ArrayList<>();
+    ArrayList<String> terminalesNoRep = new ArrayList<>();
+    ArrayList<Estado> lista_estados = new ArrayList<>();
+    ArrayList<String[]> temporal = new ArrayList<>();
+    // ArrayList
+    ArrayList<String[]> transiciones2 = new ArrayList<>();
+    ArrayList<String> estadoAceptacion = new ArrayList<>();
+    private String nombreEstado = "";
 
     public Arbol() {
         root = null;
@@ -217,6 +227,7 @@ public class Arbol {
                 //System.out.println(node.getNode_Left().getNumRight() + "->" + node.getNode_Left().getNumLeft());
 
             }
+
         }
     }
 
@@ -245,16 +256,21 @@ public class Arbol {
             Siguientes sig = new Siguientes(tp1[0], tp1[1], auxiliar);
             this.lista_tabla_sig.add(sig);
         }
-        //System.out.println("________nuevo__________");
-//        for (Siguientes ts : this.lista_tabla_sig) {
-//            //System.out.print(ts.getHoja() + ": " + ts.getLexema() + " " + "->");
-//            for (String t : ts.getSiguientes()) {
-//             //   System.out.print(t + ",");
-//            }
-//           // System.out.println("\n_________________");
-//        }
+        System.out.println("________nuevo__________");
+        for (Siguientes ts : this.lista_tabla_sig) {
+            if (ts.getLexema().equals("#")) {
+                System.out.println("hola");
+                ArrayList<String> t2 = new ArrayList<>();
+                t2.add("");
+                ts.setSiguientes(t2);
+            }
+            System.out.print(ts.getHoja() + ": " + ts.getLexema() + " " + "->");
+            for (String t : ts.getSiguientes()) {
+                System.out.print(t + ",");
+            }
+            System.out.println("\n_________________");
+        }
 
-        //__________________________________________________________
     }
 
     ArrayList<String> quitarReptinos() {
@@ -289,11 +305,17 @@ public class Arbol {
         cadena += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
         cadena += "<tr><td><i>Hoja</i></td> <td><i>Siguientes</i></td></tr>\n";
 
-        for (int j = 0; j < this.lista_siguienes.size() - 1; j++) {
+        for (int j = 0; j < this.lista_tabla_sig.size() - 1; j++) {
 
             Siguientes l_s = this.lista_tabla_sig.get(j);
             String cadena2 = "";
-
+           
+            String lexema = l_s.getLexema() ;
+            lexema = lexema.replaceFirst("\"", "");
+            char quitarComilla = lexema.charAt(lexema.length() - 1);
+            if ("\"".equals(String.valueOf(quitarComilla))) {
+                lexema = lexema.substring(0, lexema.length() - 1);
+            }
             cadena += "<tr><td><i>" + l_s.getHoja() + " " + l_s.getLexema() + "</i></td>\n";
 
             for (int i = 0; i < l_s.getSiguientes().size(); i++) {
@@ -315,150 +337,6 @@ public class Arbol {
         return cadena;
     }
 //_________________________Transiciones________________________________--
-
-    public void tabla_Transiciones() {
-
-        //Esta lista almacena temporalmente los siguientes que tienen el mismo lexema
-        ArrayList<ArrayList<String>> sig_repetidos = new ArrayList<>();
-        //Esta lista almacena los sigueintes que no estan repetidos
-        ArrayList<String[]> sig_normales = new ArrayList<>();
-
-        //________________________________________________________
-        this.estados_existentes.add(new Estado(0, this.sig_estadoIncial()));
-        //____________obtener el estado inicial______________________
-        this.transiciones.add(new Transiciones(new Estado(0, this.sig_estadoIncial()), null, null));
-        int tamanio = this.transiciones.size();
-        for (int i = 0; i < tamanio; i++) {
-            //_
-            System.out.println("i: " + i);
-
-            Transiciones tr = this.transiciones.get(i);
-            //__obtener los diguientes repetidos
-            sig_repetidos = devolverRepetido(tr.getActual().getSigueintes());
-            //_obtenr los isguietnes que no estan repetidos
-            sig_normales = noRepetidos(tr.getActual().getSigueintes());
-            if (i == 0) {
-
-                //_________Union de los siguientes___________
-                while (!sig_repetidos.isEmpty()) {
-                    System.out.println("___Repetidos_________");
-                    ArrayList<String> temporal_sig;
-                    temporal_sig = this.unir_Siguientes(sig_repetidos.get(0));
-                    sig_repetidos.remove(0);
-                    Estado est = this.comparararSi_existeEstado(this.estados_existentes, temporal_sig);
-
-                    this.transiciones.get(i).setLexema(est.getSigueintes().get(0)[1]);
-                    this.transiciones.get(i).setNext(est);
-                    this.transiciones.add(new Transiciones(est, null, null));
-                    tamanio = this.transiciones.size();
-
-                    //___obtener el estado________
-                }
-                //________obtener estado__________
-                while (!sig_normales.isEmpty()) {
-
-                    System.out.println("sig_normales " + sig_normales.size());
-
-                    if (this.obtenerSiguienteNormal(sig_normales.get(0)) != null) {
-                        ArrayList<Estado> est2 = this.estadoExistente2(this.estados_existentes, this.obtenerSiguienteNormal(sig_normales.get(0)));
-                        for (Estado est : est2) {
-
-                            this.transiciones.get(i).setActual(this.transiciones.get(i).getActual());
-                            this.transiciones.get(i).setNext(est);
-                            this.transiciones.add(new Transiciones(est, null, null));
-                            sig_normales.remove(0);
-
-                        }
-                        tamanio = this.transiciones.size();
-                    } else {
-                        sig_normales.clear();
-                    }
-                }
-                //____________________compara que el estado actual no sea igual al anterior______________
-            } else if (this.transiciones.get(i).getActual().getId() != this.transiciones.get(i - 1).getActual().getId()) {
-                System.out.println("_________________Resto de los estados___________");
-                //_________Union de los siguientes___________
-                while (!sig_repetidos.isEmpty()) {
-                    ArrayList<String> temporal_sig;
-                    temporal_sig = this.unir_Siguientes(sig_repetidos.get(0));
-                    sig_repetidos.remove(0);
-                    Estado est = this.comparararSi_existeEstado(this.estados_existentes, temporal_sig);
-
-                    this.transiciones.get(i).setActual(this.transiciones.get(i).getActual());
-                    //this.transiciones.get(i).setLexema(est.getSigueintes().get(i)[1]);
-                    this.transiciones.get(i).setNext(est);
-                    this.transiciones.add(new Transiciones(est, null, null));
-                    //___obtener el estado________
-                    tamanio = this.transiciones.size();
-                }
-                //________obtener estado__________
-                System.out.println("_________los no repetidos__________");
-
-                while (!sig_normales.isEmpty()) {
-                    System.out.println("sig_normales " + sig_normales.size());
-
-                    if (this.obtenerSiguienteNormal(sig_normales.get(0)) != null) {
-                      
-                        ArrayList<Estado> est2 = this.estadoExistente2(this.estados_existentes, this.obtenerSiguienteNormal(sig_normales.get(0)));
-                        for (Estado est : est2) {
-
-                            this.transiciones.get(i).setActual(this.transiciones.get(i).getActual());
-                            this.transiciones.get(i).setNext(est);
-                            this.transiciones.add(new Transiciones(est, null, null));
-                            sig_normales.remove(0);
-
-                        }
-
-//                        System.out.println(est.getSigueintes().get(0)[1]);
-                        //this.transiciones.get(i).setLexema(est.getSigueintes().get(i)[1]);
-                        //System.out.println("size sig normales " + sig_normales.size());
-                        tamanio = this.transiciones.size();
-                    } else {
-                        sig_normales.clear();
-                    }
-
-                }
-
-            } else {
-                i += 1;
-            }
-
-            //__________________________________
-        }
-        System.out.println("size " + tamanio);
-        mostrarTabla_transiciones();
-
-    }
-
-    void mostrarTabla_transiciones() {
-
-        System.out.println("_______Tabla de transiciones________-");
-
-        for (Transiciones transicione : this.transiciones) {
-            if (transicione.getActual() != null && transicione.getNext() != null) {
-                System.out.println("Acutal " + transicione.getActual().getId() + " -> " + transicione.getLexema() + " -> " + transicione.getNext().getId());
-
-            }
-
-        }
-        System.out.println("_____________Fin tabla________________");
-        System.out.println("____________Estados existentes______________");
-        for (Estado estados_existente : this.estados_existentes) {
-            System.out.println("Estado: " + estados_existente.getId());
-        }
-
-        System.out.println("______siguients____________");
-
-        for (Siguientes siguientes : lista_tabla_sig) {
-
-            System.out.print(siguientes.getHoja() + "->" + siguientes.getLexema());
-            for (String l : siguientes.getSiguientes()) {
-                System.out.print(l);
-            }
-            System.out.println("");
-        }
-        System.out.println("_____Fin tabla de siguients_____");
-    }
 
 //____________obtener el estado inicial____________________________
     ArrayList<String[]> sig_estadoIncial() {
@@ -630,95 +508,275 @@ public class Arbol {
         return temporal;
     }
 
-    //________compara si el siguiente esta en un estado que ya existe______
-    Estado comparararSi_existeEstado(ArrayList<Estado> estados, ArrayList<String> siguientes) {
-        Estado estado = null;
-        int num = 0;
-        ArrayList<String> temp = new ArrayList<>();
-        ArrayList<String> temp3 = new ArrayList<>();
+//_________fin    
+    public void crearPrimerEstado() {
 
-        for (Estado estado1 : estados) {
-            ArrayList<String> temp_lex = new ArrayList<>();
-            for (String[] sig : estado1.getSigueintes()) {
-                temp.add(sig[0]);
-                temp_lex.add(sig[1]);
-            }
+        Estado inicial = new Estado("S0");
+        String primeros[] = this.root.getNumLeft().split(",");
+        for (String p : primeros) {
 
-            if (siguientes.equals(temp_lex)) {
-                num = estado1.getId();
-                estado = new Estado(estado1.getId(), estado1.getSigueintes());
-
-                return estado;
-
-            }
-
+            inicial.setNumero(Integer.parseInt(p));
         }
-
-        ArrayList<String[]> temp2 = new ArrayList<>();
-
-        for (int i = 0; i < temp.size(); i++) {
-            String dato[] = new String[2];
-            dato[0] = temp.get(i);
-            dato[1] = temp3.get(i);
-            temp2.add(dato);
-        }
-        estado = new Estado((estados.size()), temp2);
-        this.estados_existentes.add(estado);
-        this.estados_nuevos.add(estado);
-
-        return estado;
+        System.out.println("inicial size" + String.valueOf(inicial.getNumbers().size()));
+        this.lista_estados.add(inicial);
     }
-//_____________________________________
 
-    ArrayList<Estado> estadoExistente2(ArrayList<Estado> estados, ArrayList<String[]> siguientes) {
-        
-        //System.out.println("____-auim me quedo xd");
-        System.out.println("_______Estado existente 2_______________");
-        ArrayList<String> temp1 = new ArrayList<>();
-        ArrayList<String> temp2 = new ArrayList<>();
-        ArrayList<Estado> estados2 = new ArrayList<>();
-        System.out.println("estados.size "+estados.size());
-       
-        for (Estado estado1 : estados) {
-            System.out.println("_______Estado " + estado1.getId());
+    private Siguientes verificarSiguiente(String sig) {
 
-            ArrayList<String> temp3 = new ArrayList<>();
-            for (String[] sig1 : estado1.getSigueintes()) {
-                temp3.add(sig1[0]);
-                System.out.println("_>>>>temp3>>>><" + sig1[0]);
+        for (Siguientes siguientes : lista_tabla_sig) {
 
+            return siguientes;
+        }
+
+        return null;
+    }
+
+    public void crearEstado() {
+        int tam = this.lista_estados.size();
+        // System.out.println("lista_estado : " + String.valueOf(tam));
+        int contDato = 0;
+        // System.out.println(contDato);
+        //System.out.println("-->");
+        //System.out.println(this.lista_estados.get(contDato).getName());
+        while (contDato < tam) {
+            // System.out.println(this.lista_estados.get(0).getName());
+            String nameEstado = this.lista_estados.get(contDato).getName();//Name estado actual
+            //System.out.println("__tam_" + String.valueOf(this.lista_estados.get(contDato).getName()));
+            ArrayList<Integer> numbers = this.lista_estados.get(contDato).getNumbers();
+
+            ArrayList<String[]> terminales = new ArrayList<>();
+            //_________________________________________
+            for (int i = 0; i < numbers.size(); i++) {
+                String t[] = obtenerSiguiente(numbers.get(i));
+
+                if (t != null) {
+                    terminales.add(t);
+                }
             }
-            ArrayList<String> temp4 = new ArrayList<>();
-            for (String[] sig2 : siguientes) {
+            //_________________________________
 
-                for (Siguientes sig : this.lista_tabla_sig) {
+            for (int i = 0; i < terminales.size(); i++) {
+                if (temporal.isEmpty()) {
+                    temporal.add(terminales.get(i));
+                } else {
+                    //System.out.println("________verfi_______");
+                    verificacionTemp(terminales.get(i));
+                }
+            }
+            //___________________________
 
-                    if (sig2[0].equals(sig.getHoja())) {
-                        temp4 = sig.getSiguientes();
+            for (String[] temp1 : temporal) {
+
+                //System.out.println("temp1___-s" + String.valueOf(temp1.length));
+                if (!"".equals(temp1[2])) {
+                    ArrayList<Integer> datos = new ArrayList<>();
+                    String[] dato = temp1[2].split(",");
+                    // System.out.println(temp1[2]);
+                    // System.out.println("dato--"+dato.length);
+                    for (int i = 0; i < dato.length; i++) {
+                        //  System.out.println("dato: "+dato[i]);
+                        datos.add(Integer.parseInt(dato[i]));
+                    }
+                    if (!existeEstado(datos)) {
+                        Estado nuevo = new Estado("S" + String.valueOf(contEst));
+                        nuevo.setNumbers(datos);
+                        this.lista_estados.add(nuevo);
+                        this.contEst++;
+                        tam++;
+                        String[] trasicion = {nameEstado, temp1[1], nuevo.getName()};
+                        this.transiciones2.add(trasicion);
+                    } else {
+                        String[] transicion = {nameEstado, temp1[1], nombreEstado};
+                        transiciones2.add(transicion);
+                        nombreEstado = "";
                     }
                 }
-                Estado estado = null;
-                if (temp3.equals(temp4)) {
-                    System.out.println("______son iguales______" + true);
+            }
+            this.temporal.clear();
+            contDato++;
+        }
+        //___________________________________________
 
-                    estado = estado1;
-                    estados2.add(estado);
-                } else {
-                    estado = new Estado(this.estados_existentes.size(), siguientes);
-                    System.out.println(estado.getSigueintes().get(0)[1]);
-                     estados2.add(estado);
-                    this.estados_existentes.add(estado);
+    }
 
+    private void verificacionTemp(String[] simb) {
+        //System.out.println("Simb_______" + String.valueOf(simb[0]));
+        boolean flag = false;
+        for (String[] temp : this.temporal) {
+            if (simb[1].equals(temp[1])) {
+                // System.out.println("------esta aqui-------");
+                String[] numSimbolos = simb[2].split(",");
+                String[] numTemp = temp[2].split(",");
+                ArrayList<Integer> numberTotales = new ArrayList<>();
+
+                for (int i = 0; i < numSimbolos.length; i++) {
+                    numberTotales.add(Integer.parseInt(numSimbolos[i]));
+                }
+                for (int i = 0; i < numSimbolos.length; i++) {
+                    numberTotales.add(Integer.parseInt(numTemp[i]));
                 }
 
-                System.out.println("_>>>>>temp2>>><" + sig2[0]);
+                Set<Integer> hashset = new HashSet(numberTotales);
+                numberTotales.clear();
+                numberTotales.addAll(hashset);
+                Collections.sort(numberTotales);
+
+                String noRepetidos = "";
+                int cont = 0;
+                for (Integer num : numberTotales) {
+                    if (cont < (numberTotales.size() - 1)) {
+                        noRepetidos += num + ",";
+                    } else {
+                        noRepetidos += num;
+                    }
+                    cont++;
+                }
+                temp[2] = noRepetidos;
+                flag = true;
             }
 
         }
-        
-        //this.estados_nuevos.add(estado);
-        System.out.println("_____________Fin estado existente 2____________");
-        return estados2;
+        // System.out.println("Simb_______" + String.valueOf(simb[0]));
+        if (!flag) {
+            temporal.add(simb);
+        }
     }
-//_________fin    
+
+    private boolean existeEstado(ArrayList<Integer> numbers) {
+        boolean flag = false;
+        for (Estado estado : this.lista_estados) {
+            ArrayList<Integer> numerosEstao = estado.getNumbers();
+            int sizeAnterior = numerosEstao.size();
+            int sizeActual = numbers.size();
+            int comparar = 0;
+            if (sizeAnterior == sizeActual) {
+
+                for (Integer anterior : numerosEstao) {
+                    for (Integer number : numbers) {
+                        if (anterior.equals(number)) {
+                            comparar++;
+                        }
+                    }
+                }
+            }
+            if (comparar == sizeActual) {
+                flag = true;
+                this.nombreEstado = estado.getName();
+            }
+
+        }
+        return flag;
+    }
+
+    private String[] obtenerSiguiente(int simb) {
+
+        for (Siguientes siguiente : lista_tabla_sig) {
+//            System.out.println("get hoja "+siguiente.getLexema());
+            if (siguiente.getHoja().equals(String.valueOf(simb))) {
+//                System.out.println("-Simbolo-" + String.valueOf(simb));
+//                System.out.println("-hoja-" + siguiente.getHoja());
+
+                String temp = "";
+                for (int i = 0; i < siguiente.getSiguientes().size(); i++) {
+                    if (i < (siguiente.getSiguientes().size() - 1)) {
+                        temp += siguiente.getSiguientes().get(i) + ",";
+                    } else {
+                        temp += siguiente.getSiguientes().get(i);
+                    }
+                }
+//                if (siguiente.getLexema().equals("#")) {
+//                    System.out.println("###########");
+//                }
+//                System.out.println("_____fin obtener siguiente________");
+                String temp3[] = {siguiente.getHoja(), siguiente.getLexema(), temp};
+                return temp3;
+            }
+        }
+        System.out.println("_________aqui");
+        return null;
+    }
+
+    public void mostrarTransiicones() {
+
+        for (String[] tr : transiciones2) {
+
+            System.out.print(tr[0] + "-->");
+            System.out.print(tr[1] + "-->");
+            System.out.print(tr[2] + "\n");
+        }
+    }
+
+    public void asignarEstado_aceptacion() {
+
+        for (Estado estado : this.lista_estados) {
+
+            ArrayList<Integer> num = estado.getNumbers();
+            for (Integer i : num) {
+                if (String.valueOf(i).equals(this.root.getNode_Right().numLeft)) {
+                    System.out.println("estado aceptacion " + estado.getName());
+                    estadoAceptacion.add(estado.getName());
+                    break;
+                }
+            }
+        }
+    }
+
+    //_____________Graficar tabla de transicione
+    public String GraficarTranciones() {
+
+        String cadena = "";
+        cadena += "digraph G{\nlabel=\"" + this.name + "\"; graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"2\"];\n";
+        cadena += "node[shape=plain]\n";
+        cadena += "rankdir=LR;\n";
+        cadena += "Foo [label=<\n";
+        cadena += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
+        cadena += "<tr><td><i>Estado</i></td><td><i>Lexema</i></td> <td><i>Transicion</i></td></tr>\n";
+
+        for (String[] transicion : transiciones2) {
+            String lexema = transicion[1];
+            lexema = lexema.replaceFirst("\"", "");
+            char quitarComilla = lexema.charAt(lexema.length() - 1);
+            if ("\"".equals(String.valueOf(quitarComilla))) {
+                lexema = lexema.substring(0, lexema.length() - 1);
+            }
+            cadena += "<tr><td>" + transicion[0] + "</td><td>" + lexema + "</td><td>" + transicion[2] + "</td></tr>";
+        }
+        // cadena += "<tr><td><i>" + this.lista_tabla_sig.get(this.lista_tabla_sig.size() - 1).getHoja() + " \"#\"</i></td><td><i> --- </i></td></tr>";
+
+        cadena += "</table>>];}";
+        //System.out.println(cadena);
+        return cadena;
+    }
+
+    public String GenerarAFD() {
+        String etiqueta = "digraph g{\n label=\"" + this.name + "\";\n";
+        etiqueta += "rankdir=LR;\n";
+        etiqueta += "node[shape=oval,width=0.5,fontsize=12,fillcolor=seashell2,style=filled];\n";
+        String nodos = "";
+
+        for (Estado estado : lista_estados) {
+            nodos += estado.getName() + "[label=\"" + estado.getName() + "\"];\n";
+            for (String estadoA : estadoAceptacion) {
+                if (estadoA.equals(estado.getName())) {
+
+                    nodos += estado.getName() + "[shape=doublecircle, label=\"" + estado.getName() + "\"];\n";
+                }
+            }
+        }
+
+        for (String[] transicion : this.transiciones2) {
+
+            String lexema = transicion[1];
+            lexema = lexema.replaceFirst("\"", "");
+            char quitarComilla = lexema.charAt(lexema.length() - 1);
+            if ("\"".equals(String.valueOf(quitarComilla))) {
+                lexema = lexema.substring(0, lexema.length() - 1);
+            }
+            nodos += transicion[0] + "->" + transicion[2] + "[label=\"" + lexema + "\"];\n";
+        }
+        etiqueta += nodos;
+        etiqueta += "\n}";
+        return etiqueta;
+    }
+
 }
