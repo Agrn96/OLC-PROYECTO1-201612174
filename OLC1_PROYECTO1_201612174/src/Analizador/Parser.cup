@@ -20,6 +20,7 @@ terminal String TK_ID, TK_PC;
 terminal String TK_CP, TK_CK;
 terminal String TK_OR, TK_I;
 terminal String TK_P, TK_V;
+terminal String TK_ESPECIALES;
 terminal String TK_LLAVEIZ, TK_LLAVED;
 terminal String TK_CADENA, TK_ASIGNACION;
 terminal String TK_DOS_P, TK_SIMBOLOS;
@@ -29,6 +30,7 @@ terminal String TK_CONJUNTO, TK_LISTA_SIMBOLOS;
 
 
 non terminal ini;
+non terminal inicio1;
 non terminal inicio;
 non terminal comentarios2;
 non terminal instructions;
@@ -36,22 +38,27 @@ non terminal conjuntos;
 non terminal expresion_regular;
 non terminal Nodo expresion;
 non terminal validar_cadena;
+
 start with ini;
 ini::=
-    TK_LLAVEIZ inicio  TK_LLAVED
-    |comentarios2
+    
+    inicio1
     |error
 ;
 
+inicio1::=
+            TK_LLAVEIZ inicio  TK_LLAVED inicio1
+            |TK_LLAVEIZ inicio  TK_LLAVED
+            |comentarios2 inicio1
+            |comentarios2
+;
 inicio::=
          instructions  inicio
         |  instructions 
 ; 
 
-comentarios2 ::=
-             TK_COMENT:c {: System.out.println("Comentario: "+c); :}  comentarios2          
-             |TK_COMENT:c {: System.out.println("Comentario: "+c); :} 
-             |TK_COM_MTL:c {: System.out.println("Comentario: "+c); :} comentarios2
+comentarios2 ::=       
+             TK_COMENT:c {: System.out.println("Comentario: "+c); :} 
              |TK_COM_MTL:c {: System.out.println("Comentario: "+c); :} 
 ;    
 instructions::=
@@ -88,8 +95,9 @@ expresion::=
     | TK_CK expresion:a  {: RESULT=new Nodo(a,"*",null); :}
     | TK_I expresion:a {: RESULT=new Nodo(a,"?",null); :}  
     |TK_CONJUNTO:a {: RESULT=new Nodo(null,a,null); :}
+    |TK_ESPECIALES:a {: RESULT=new Nodo(null,a,null); :}
     |TK_CADENA:a {: RESULT=new Nodo(null,a,null); :}
-
+   
 ;
 
 validar_cadena::=

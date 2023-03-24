@@ -8,30 +8,31 @@ package Analizador;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int TK_LLAVED = 15;
-  public static final int TK_LISTA_SIMBOLOS = 23;
-  public static final int TK_COM_MTL = 21;
-  public static final int TK_CADENA = 16;
+  public static final int TK_LLAVED = 16;
+  public static final int TK_LISTA_SIMBOLOS = 24;
+  public static final int TK_COM_MTL = 22;
+  public static final int TK_CADENA = 17;
   public static final int TK_DIGIT = 3;
   public static final int TK_PC = 7;
-  public static final int TK_CONJUNTO = 22;
-  public static final int TK_SIMBOLOS = 19;
+  public static final int TK_CONJUNTO = 23;
+  public static final int TK_SIMBOLOS = 20;
   public static final int TK_LETTERS = 4;
-  public static final int TK_DOS_P = 18;
+  public static final int TK_DOS_P = 19;
   public static final int TK_V = 13;
   public static final int EOF = 0;
   public static final int TK_P = 12;
   public static final int TK_CP = 8;
-  public static final int TK_LLAVEIZ = 14;
+  public static final int TK_LLAVEIZ = 15;
   public static final int TK_OR = 10;
   public static final int TK_DPORCENTAJE = 5;
   public static final int error = 1;
   public static final int TK_CK = 9;
   public static final int TK_I = 11;
-  public static final int TK_ASIGNACION = 17;
-  public static final int TK_COMENT = 20;
+  public static final int TK_ASIGNACION = 18;
+  public static final int TK_COMENT = 21;
   public static final int TK_CONJ = 2;
   public static final int TK_ID = 6;
+  public static final int TK_ESPECIALES = 14;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -47,6 +48,7 @@ public class sym {
   "TK_I",
   "TK_P",
   "TK_V",
+  "TK_ESPECIALES",
   "TK_LLAVEIZ",
   "TK_LLAVED",
   "TK_CADENA",

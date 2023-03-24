@@ -57,6 +57,7 @@ CONJ="CONJ"
 {I} {return new Symbol(sym.TK_I, yytext());}
 {P} {return new Symbol(sym.TK_P, yytext());}
 {V} {return new Symbol(sym.TK_V, yytext());}
+{ESPECIALES} {return new Symbol(sym.TK_ESPECIALES, yytext());}
 {LLAVEIZ} {return new Symbol(sym.TK_LLAVEIZ, yytext());}
 {LLAVED} {return new Symbol(sym.TK_LLAVED, yytext());}
 {COMENT} {return new Symbol(sym.TK_COMENT, yytext());}

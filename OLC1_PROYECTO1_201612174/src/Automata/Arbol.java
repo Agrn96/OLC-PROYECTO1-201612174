@@ -190,7 +190,7 @@ public class Arbol {
     public String getContenido(Nodo raiz) {
         return "digraph g{\n label=\"" + this.name + "\";"
                 + "rankdir=TB;\n"
-                + "node [shape=record, width=0.5, fontsize=12, fillcolor=seashell2, style=filled];\n"
+                + "node [shape=record, width=0.2, fontsize=12, fillcolor=seashell2, style=filled];\n"
                 + raiz.grafica()
                 + "}\n";
 

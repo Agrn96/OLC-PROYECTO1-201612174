@@ -30,7 +30,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     int cont_afd = 1;
     String ruta = "";
     int contRepo = 0;
-   // String cadenaAnilar = "";
+    // String cadenaAnilar = "";
 
     public VentanaPrincipal() {
         initComponents();
@@ -341,27 +341,32 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        Analizar();
+        if (!OLC1_PROYECTO1_201612174.arboles.isEmpty()) {
+            OLC1_PROYECTO1_201612174.arboles.clear();
+        } else {
+            Analizar();
 
-        jTextArea2.setText("Anlisis realizado con exito");
-        this.generarGrafos();
-        JOptionPane.showMessageDialog(null, "Anlisis finalizado");
+            jTextArea2.setText("Anlisis realizado con exito");
+            this.generarGrafos();
+            JOptionPane.showMessageDialog(null, "Anlisis finalizado");
+        }
 
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
-    
+
 
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
-            if (jComboBox1.getSelectedItem() == "Abrir") {
+
+        if (jComboBox1.getSelectedItem() == "Abrir") {
             if (!OLC1_PROYECTO1_201612174.arboles.isEmpty()) {
                 OLC1_PROYECTO1_201612174.arboles.clear();
+                jTextArea2.setText("");
             }
 
             jTextArea2.setText("Archivo Abierto");
